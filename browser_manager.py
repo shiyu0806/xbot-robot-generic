@@ -105,7 +105,11 @@ class BrowserManager:
         """启动新的 Electron 应用实例"""
         exe_path = self.app_config.get("exe_path")
         if not exe_path:
-            raise ValueError("配置中未指定 exe_path")
+            raise ValueError(
+                "未指定应用路径。请使用以下方式之一:\n"
+                "  1. 命令行: AIoT-auto-test.exe --launch --app-path \"C:\\路径\\应用.exe\"\n"
+                "  2. 配置文件: 修改 config.yaml 中的 app.exe_path"
+            )
         
         logger.info(f"正在启动应用: {exe_path}")
         

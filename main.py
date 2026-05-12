@@ -113,6 +113,13 @@ def parse_args():
     )
     
     parser.add_argument(
+        "--app-path", "-a",
+        type=str,
+        default=None,
+        help="目标应用 EXE 路径（用于 --launch 模式），覆盖配置文件中的 exe_path"
+    )
+    
+    parser.add_argument(
         "--row", "-r",
         type=int,
         default=None,
@@ -156,6 +163,9 @@ def main():
     # 确定连接模式
     if args.launch:
         config["app"]["connect_mode"] = "launch"
+        if args.app_path:
+            config["app"]["exe_path"] = args.app_path
+            logger.info(f"使用命令行指定的应用路径: {args.app_path}")
         logger.info("模式: 启动新实例")
     else:
         config["app"]["connect_mode"] = "connect"
