@@ -21,21 +21,68 @@ from browser_manager import BrowserManager
 from actions import AutomationActions
 from logger import setup_logger
 
+
+def get_app_dir() -> Path:
+    """获取应用根目录（兼容 PyInstaller 打包和开发环境）"""
+    if getattr(sys, 'frozen', False):
+        # PyInstaller 打包后，_MEIPASS 是临时解压目录
+        # 但用户目录更合适存放可修改的配置文件
+        return Path(os.path.dirname(sys.executable))
+    return Path(__file__).parent
+
+
+def get_bundle_dir() -> Path:
+    """获取打包资源目录"""
+    if getattr(sys, 'frozen', False):
+        return Path(sys._MEIPASS)
+    return Path(__file__).parent
+
 logger = logging.getLogger(__name__)
 
 
-def load_config(config_path: str = "config.yaml") -> dict:
-    """加载配置文件"""
-    config_file = Path(config_path)
+def load_config(config_path: str = None) -> dict:
+    """加载配置文件
     
-    if not config_file.exists():
-        logger.error(f"配置文件不存在: {config_path}")
-        sys.exit(1)
+    查找顺序：
+    1. 用户指定的路径
+    2. EXE 同目录下的 config.yaml（用户可修改）
+    3. 打包资源中的 config.yaml（默认模板）
+    """
+    if config_path:
+        # 用户明确指定了路径
+        config_file = Path(config_path)
+        if not config_file.exists():
+            logger.error(f"配置文件不存在: {config_path}")
+            sys.exit(1)
+    else:
+        # 自动查找
+        app_dir = get_app_dir() / "config.yaml"
+        bundle_dir = get_bundle_dir() / "config.yaml"
+        
+        if app_dir.exists():
+            config_file = app_dir
+        elif bundle_dir.exists():
+            config_file = bundle_dir
+            # 如果 EXE 目录没有，自动从打包资源复制一份
+            try:
+                import shutil
+                shutil.copy2(str(bundle_dir), str(app_dir))
+                logger.info(f"已从打包资源复制默认配置到: {app_dir}")
+            except Exception as e:
+                logger.warning(f"无法复制默认配置文件: {e}")
+        else:
+            logger.error(
+                f"配置文件不存在！请在以下位置放置 config.yaml:\n"
+                f"  {app_dir}\n"
+                f"或使用 --config 参数指定路径"
+            )
+            sys.exit(1)
+        config_file = app_dir if app_dir.exists() else bundle_dir
     
     with open(config_file, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     
-    logger.info(f"已加载配置: {config_path}")
+    logger.info(f"已加载配置: {config_file}")
     return config
 
 
@@ -55,8 +102,8 @@ def parse_args():
     
     parser.add_argument(
         "--config", "-c",
-        default="config.yaml",
-        help="配置文件路径 (默认: config.yaml)"
+        default=None,
+        help="配置文件路径 (默认: 自动查找 EXE 目录或打包资源中的 config.yaml)"
     )
     
     parser.add_argument(
