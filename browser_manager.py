@@ -7,9 +7,9 @@
 import subprocess
 import time
 import logging
-from typing import Optional
+from typing import Optional, Any
 
-from playwright.sync_api import sync_playwright, Browser, BrowserContext, Page, Electron
+from playwright.sync_api import sync_playwright, BrowserContext, Page
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class BrowserManager:
         self.timeout_config = config.get("timeout", {})
         
         self._playwright = None
-        self._electron: Optional[Electron] = None
+        self._electron: Optional[Any] = None
         self._app = None
         self._page: Optional[Page] = None
         self._context: Optional[BrowserContext] = None
