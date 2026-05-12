@@ -35,10 +35,18 @@ jobs:
         python -m playwright install chromium
         python -m playwright install-deps chromium
 
+    - name: Debug - list files
+      run: |
+        dir
+        python -c "import os; print(os.getcwd())"
+
     - name: Build EXE with PyInstaller
       run: |
-        pyinstaller --onefile --name "AIoT自动测试工具" ^
+        pyinstaller --onefile --name "AIoT-auto-test" ^
           --add-data "config.yaml;." ^
+          --add-data "actions.py;." ^
+          --add-data "browser_manager.py;." ^
+          --add-data "logger.py;." ^
           --hidden-import=playwright ^
           --hidden-import=playwright.sync_api ^
           --hidden-import=yaml ^
@@ -49,15 +57,15 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
-        name: AIoT自动测试工具-win64
-        path: dist/AIoT自动测试工具.exe
+        name: AIoT-auto-test-win64
+        path: dist/AIoT-auto-test.exe
         retention-days: 30
 
     - name: Create Release (on tag)
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
-        files: dist/AIoT自动测试工具.exe
+        files: dist/AIoT-auto-test.exe
         generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
