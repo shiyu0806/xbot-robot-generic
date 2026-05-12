@@ -1,0 +1,44 @@
+# ============================================================
+# AIoT 认证测试平台 - 自动化配置
+# ============================================================
+
+# 目标应用配置
+app:
+  # Electron 应用路径（Windows）
+  exe_path: "C:/Program Files/AIoT Certification Studio/AIoT Certification Studio.exe"
+  # 或者通过窗口标题查找已运行的应用
+  window_title: "认证测试平台"
+  # 连接模式: "launch" 启动新实例 | "connect" 连接已运行实例
+  connect_mode: "connect"
+
+# 超时设置（秒）
+timeout:
+  page_load: 30
+  element_wait: 10
+  dialog_wait: 5
+  action_delay: 1
+
+# 选择器配置（CSS 选择器）
+selectors:
+  # 主页面表格
+  table:
+    container: ".ctrl-table .t-table__content table.t-table--layout-fixed"
+  
+  # 表格中的操作按钮（圆形图标按钮）
+  action_button:
+    row_index: 2          # 表格行索引（从0开始）
+    cell_index: 5         # 单元格索引（从0开始）
+    css: "button.operation-icon svg.circle-icon"
+  
+  # 上传报告按钮（在弹窗中）
+  upload_report:
+    dialog: ".t-dialog__footer"
+    button_text: "上传报告"
+    css: ".t-dialog__footer button.t-dialog__confirm"
+
+# 日志配置
+logging:
+  level: "INFO"           # DEBUG | INFO | WARNING | ERROR
+  file: "logs/automation.log"
+  max_size_mb: 10
+  backup_count: 5
