@@ -45,7 +45,7 @@ class BrowserManager:
         # 需要应用启动时带 --remote-debugging-port=9222 参数
         try:
             browser = self._playwright.chromium.connect_over_cdp(
-                "http://localhost:9222",
+                "http://127.0.0.1:9222",
                 timeout=self.timeout_config.get("element_wait", 10) * 1000
             )
             self._context = browser.contexts[0]
@@ -53,9 +53,18 @@ class BrowserManager:
             logger.info(f"已连接到页面: {self._page.title()}")
             return self._page
         except Exception as e:
-            logger.warning(f"CDP 连接失败: {e}")
-            logger.info("尝试通过窗口查找...")
-            return self._connect_via_window()
+            logger.warning(f"CDP 直接连接失败: {e}")
+            logger.info("尝试通过窗口查找并连接...")
+            try:
+                return self._connect_via_window()
+            except Exception as e2:
+                raise RuntimeError(
+                    f"无法连接到应用。请确认:\n"
+                    f"  1. AIoT 认证测试平台已启动\n"
+                    f"  2. 应用启动时带了 --remote-debugging-port=9222 参数\n"
+                    f"     例如: AIoT认证测试平台.exe --remote-debugging-port=9222\n"
+                    f"  原始错误: {e2}"
+                )
     
     def _connect_via_window(self) -> Page:
         """通过窗口标题查找并连接"""
@@ -76,7 +85,7 @@ class BrowserManager:
             
             # 通过 CDP 连接
             browser = self._playwright.chromium.connect_over_cdp(
-                "http://localhost:9222",
+                "http://127.0.0.1:9222",
                 timeout=5000
             )
             self._context = browser.contexts[0]
@@ -86,6 +95,11 @@ class BrowserManager:
             
         except ImportError:
             raise RuntimeError("需要安装 pyautogui 和 pygetwindow: pip install pyautogui pygetwindow")
+        except Exception as e:
+            raise RuntimeError(
+                f"通过窗口连接失败: {e}\n"
+                f"请确保应用以 --remote-debugging-port=9222 参数启动"
+            )
     
     def launch(self) -> Page:
         """启动新的 Electron 应用实例"""

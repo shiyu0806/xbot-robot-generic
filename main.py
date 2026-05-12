@@ -184,6 +184,9 @@ def main():
     except KeyboardInterrupt:
         logger.info("用户中断操作")
         sys.exit(0)
+    except RuntimeError as e:
+        logger.error(f"执行失败:\n{e}")
+        sys.exit(1)
     except Exception as e:
         logger.error(f"执行失败: {e}", exc_info=True)
         sys.exit(1)
