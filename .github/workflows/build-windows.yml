@@ -50,8 +50,6 @@ jobs:
           --hidden-import=playwright \
           --hidden-import=playwright.sync_api \
           --hidden-import=yaml \
-          --hidden-import=pyautogui \
-          --hidden-import=pygetwindow \
           --console \
           main.py
 

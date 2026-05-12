@@ -6,10 +6,14 @@
 app:
   # Electron 应用路径（Windows）
   exe_path: "C:/Program Files/AIoT Certification Studio/AIoT Certification Studio.exe"
-  # 或者通过窗口标题查找已运行的应用
-  window_title: "认证测试平台"
   # 连接模式: "launch" 启动新实例 | "connect" 连接已运行实例
   connect_mode: "connect"
+  # CDP 调试端口（Electron/Chromium --remote-debugging-port）
+  cdp_port: 9222
+  # 启动后等待 CDP 就绪的超时秒数（仅 launch 模式）
+  startup_timeout: 30
+  # 退出时是否关闭已启动的应用（仅 launch 模式）
+  kill_on_exit: false
 
 # 超时设置（秒）
 timeout:

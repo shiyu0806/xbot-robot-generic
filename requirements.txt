@@ -1,15 +1,3 @@
 # AIoT 认证测试平台 - 自动化工具依赖
-# Python 3.8+
-
-# 浏览器自动化
 playwright>=1.40.0
-
-# 配置文件
 pyyaml>=6.0
-
-# Windows 窗口管理（可选，用于连接已运行应用）
-pyautogui>=0.9.54
-pygetwindow>=0.0.9
-
-# 日志（标准库，无需安装）
-# logging
