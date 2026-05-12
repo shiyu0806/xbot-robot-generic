@@ -31,27 +31,28 @@ jobs:
         pip install pyinstaller
 
     - name: Install Playwright browsers
+      shell: bash
       run: |
         python -m playwright install chromium
-        python -m playwright install-deps chromium
+        python -m playwright install-deps chromium || true
 
     - name: Debug - list files
+      shell: bash
       run: |
-        dir
+        ls -la
         python -c "import os; print(os.getcwd())"
 
     - name: Build EXE with PyInstaller
+      shell: bash
       run: |
-        pyinstaller --onefile --name "AIoT-auto-test" ^
-          --add-data "config.yaml;." ^
-          --add-data "actions.py;." ^
-          --add-data "browser_manager.py;." ^
-          --add-data "logger.py;." ^
-          --hidden-import=playwright ^
-          --hidden-import=playwright.sync_api ^
-          --hidden-import=yaml ^
-          --hidden-import=loguru ^
-          --console ^
+        pyinstaller --onefile --name "AIoT-auto-test" \
+          --add-data "config.yaml;." \
+          --hidden-import=playwright \
+          --hidden-import=playwright.sync_api \
+          --hidden-import=yaml \
+          --hidden-import=pyautogui \
+          --hidden-import=pygetwindow \
+          --console \
           main.py
 
     - name: Upload build artifact
